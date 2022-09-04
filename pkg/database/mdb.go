@@ -25,6 +25,11 @@ func NewMongoConnection(ctx context.Context, info ConnectionInfo) (*mongo.Databa
 	if err != nil {
 		return nil, err
 	}
+	defer func(dbClient *mongo.Client, ctx context.Context) {
+		if err := dbClient.Disconnect(ctx); err != nil {
+			return
+		}
+	}(dbClient, ctx)
 
 	if err := dbClient.Ping(context.Background(), nil); err != nil {
 		return nil, err

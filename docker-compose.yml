@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  notes-log:
+    build: ./
+    command: ./notes-log
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    environment:
+      - DB_URI=mongodb://db:27017
+      - DB_USERNAME=admin
+      - DB_PASSWORD=admin
+      - DB_DATABASE=info
+      - DB_COLLECTION=logs
+      - SERVER_PORT=9000
+
+  db:
+    restart: always
+    image: mongo:latest
+    volumes:
+      - ./.build/volumes/mongodb/data:/data/db
+    environment:
+      - MONGODB_DATABASE=info
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017"

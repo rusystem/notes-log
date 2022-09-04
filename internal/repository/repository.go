@@ -7,21 +7,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Repository interface {
+type Logs interface {
 	Insert(ctx context.Context, item domain.LogItem) error
 }
 
-type Logger struct {
-	cfg *config.Config
-	db  *mongo.Database
+type Repository struct {
+	Logs Logs
 }
 
-func NewLogRepository(cfg *config.Config, db *mongo.Database) *Logger {
-	return &Logger{db: db, cfg: cfg}
-}
-
-func (r *Logger) Insert(ctx context.Context, item domain.LogItem) error {
-	_, err := r.db.Collection(r.cfg.DB.Collection).InsertOne(ctx, item)
-
-	return err
+func NewRepository(cfg *config.Config, db *mongo.Database) *Repository {
+	return &Repository{
+		Logs: NewLogsRepository(cfg, db),
+	}
 }

@@ -9,10 +9,10 @@ import (
 
 type Server struct {
 	grpcSrv   *grpc.Server
-	logServer *LogServer
+	logServer log.LogsServer
 }
 
-func New(logServer *LogServer) *Server {
+func NewServer(logServer log.LogsServer) *Server {
 	return &Server{
 		grpcSrv:   grpc.NewServer(),
 		logServer: logServer,
@@ -27,7 +27,7 @@ func (s *Server) Run(port int) error {
 		return err
 	}
 
-	log.RegisterLogServiceServer(s.grpcSrv, s.logServer)
+	log.RegisterLogsServer(s.grpcSrv, s.logServer)
 
 	if err := s.grpcSrv.Serve(lis); err != nil {
 		return err

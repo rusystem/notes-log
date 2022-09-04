@@ -4,7 +4,7 @@ package log;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "../pkg/domain/log";
+option go_package = "../pkg/domain/logs";
 
 message LogRequest {
   enum Actions {
@@ -27,9 +27,8 @@ message LogRequest {
   google.protobuf.Timestamp timestamp = 4;
 }
 
-message Empty {
-}
+message Empty {}
 
-service LogService {
-  rpc Log(LogRequest) returns (Empty) {}
+service Logs {
+  rpc Insert(LogRequest) returns (Empty) {}
 }

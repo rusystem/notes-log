@@ -43,11 +43,10 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	logRepo := repository.NewLogRepository(cfg, db)
-	logService := service.NewLogService(logRepo)
-	logSrv := server.NewLogServer(logService)
+	logRepo := repository.NewRepository(cfg, db)
+	logService := service.NewService(logRepo)
 
-	srv := server.New(logSrv)
+	srv := server.NewServer(logService.Logs)
 	go func() {
 		if err := srv.Run(cfg.Server.Port); err != nil {
 			logrus.Fatal(err)
