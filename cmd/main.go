@@ -9,6 +9,8 @@ import (
 	"github.com/rusystem/notes-log/pkg/database"
 	"github.com/sirupsen/logrus"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -44,6 +46,21 @@ func main() {
 	logRepo := repository.NewLogRepository(cfg, db)
 	logService := service.NewLogService(logRepo)
 	logSrv := server.NewLogServer(logService)
-	srv := server.New(logSrv)
 
+	srv := server.New(logSrv)
+	go func() {
+		if err := srv.Run(cfg.Server.Port); err != nil {
+			logrus.Fatal(err)
+		}
+	}()
+
+	logrus.Print("Notes-log started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Print("Notes-log stopped")
+
+	srv.Stop()
 }

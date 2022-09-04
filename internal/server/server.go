@@ -9,17 +9,17 @@ import (
 
 type Server struct {
 	grpcSrv   *grpc.Server
-	logServer log.LogServiceServer
+	logServer *LogServer
 }
 
-func New(logServer log.LogServiceServer) *Server {
+func New(logServer *LogServer) *Server {
 	return &Server{
 		grpcSrv:   grpc.NewServer(),
 		logServer: logServer,
 	}
 }
 
-func (s *Server) ListenAndServe(port int) error {
+func (s *Server) Run(port int) error {
 	addr := fmt.Sprintf(":%d", port)
 
 	lis, err := net.Listen("tcp", addr)
@@ -34,4 +34,8 @@ func (s *Server) ListenAndServe(port int) error {
 	}
 
 	return nil
+}
+
+func (s *Server) Stop() func() {
+	return s.grpcSrv.Stop
 }
