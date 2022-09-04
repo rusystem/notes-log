@@ -37,5 +37,5 @@ func (s *Server) Run(port int) error {
 }
 
 func (s *Server) Stop() func() {
-	return s.grpcSrv.Stop
+	return s.grpcSrv.GracefulStop
 }

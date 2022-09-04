@@ -7,23 +7,28 @@ services:
     ports:
       - "9000:9000"
     depends_on:
-      - db
+      - mongodb
     environment:
-      - DB_URI=mongodb://db:27017
-      - DB_USERNAME=admin
-      - DB_PASSWORD=admin
-      - DB_DATABASE=info
+      - DB_URI=mongodb://mongodb
+      - DB_USERNAME=root
+      - DB_PASSWORD=qwerty
+      - DB_DATABASE=admin
       - DB_COLLECTION=logs
       - SERVER_PORT=9000
-
-  db:
+    networks:
+      - application
+  mongodb:
     restart: always
     image: mongo:latest
-    volumes:
-      - ./.build/volumes/mongodb/data:/data/db
     environment:
-      - MONGODB_DATABASE=info
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=qwerty
+      - MONGODB_DATABASE=admin
     ports:
       - "27017:27017"
+    networks:
+      - application
+
+networks:
+  application:
+    external: true

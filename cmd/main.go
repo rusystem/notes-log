@@ -47,11 +47,10 @@ func main() {
 	logService := service.NewService(logRepo)
 
 	srv := server.NewServer(logService.Logs)
-	go func() {
-		if err := srv.Run(cfg.Server.Port); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
+	if err := srv.Run(cfg.Server.Port); err != nil {
+		logrus.Fatal(err)
+	}
+	defer srv.Stop()
 
 	logrus.Print("Notes-log started")
 
@@ -61,5 +60,4 @@ func main() {
 
 	logrus.Print("Notes-log stopped")
 
-	srv.Stop()
 }
