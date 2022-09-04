@@ -11,16 +11,16 @@ type Repository interface {
 	Insert(ctx context.Context, item domain.LogItem) error
 }
 
-type Log struct {
+type Logger struct {
 	cfg *config.Config
 	db  *mongo.Database
 }
 
-func NewLogRepository(cfg *config.Config, db *mongo.Database) *Log {
-	return &Log{db: db, cfg: cfg}
+func NewLogRepository(cfg *config.Config, db *mongo.Database) *Logger {
+	return &Logger{db: db, cfg: cfg}
 }
 
-func (r *Log) Insert(ctx context.Context, item domain.LogItem) error {
+func (r *Logger) Insert(ctx context.Context, item domain.LogItem) error {
 	_, err := r.db.Collection(r.cfg.DB.Collection).InsertOne(ctx, item)
 
 	return err
