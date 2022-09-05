@@ -4,21 +4,22 @@ services:
   notes-log:
     build: ./
     command: ./notes-log
-    hostname: noteslog
-    ports:
-      - "9000:9000"
     depends_on:
       - mongodb
+      - amqp
     environment:
       - DB_URI=mongodb://mongodb
       - DB_USERNAME=root
       - DB_PASSWORD=qwerty
       - DB_DATABASE=admin
       - DB_COLLECTION=logs
-      - SERVER_HOST=noteslog
-      - SERVER_PORT=9000
+      - RABBIT_USERNAME=guest
+      - RABBIT_PASSWORD=guest
+      - RABBIT_HOST=noteslog
+      - RABBIT_PORT=5672
     networks:
       - app_log
+
   mongodb:
     restart: always
     image: mongo:latest
@@ -28,6 +29,15 @@ services:
       - MONGODB_DATABASE=admin
     ports:
       - "27017:27017"
+    networks:
+      - app_log
+
+  amqp:
+    restart:  always
+    image: rabbitmq:latest
+    hostname: noteslog
+    ports:
+      - "5672:5672"
     networks:
       - app_log
 

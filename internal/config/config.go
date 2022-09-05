@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	DB     Mongo
-	Server Server
-	Ctx    struct {
+	DB  Mongo
+	MQ  Rabbit
+	Ctx struct {
 		Ttl time.Duration `mapstructure:"ttl"`
 	} `mapstructure:"ctx"`
 }
@@ -22,9 +22,11 @@ type Mongo struct {
 	Collection string
 }
 
-type Server struct {
-	Host string
-	Port int
+type Rabbit struct {
+	Username string
+	Password string
+	Host     string
+	Port     int
 }
 
 func New(folder, filename string) (*Config, error) {
@@ -45,7 +47,7 @@ func New(folder, filename string) (*Config, error) {
 		return nil, err
 	}
 
-	if err := envconfig.Process("server", &cfg.Server); err != nil {
+	if err := envconfig.Process("rabbit", &cfg.MQ); err != nil {
 		return nil, err
 	}
 

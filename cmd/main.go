@@ -31,8 +31,7 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Ctx.Ttl)
-	defer cancel()
+	ctx := context.Background()
 
 	dbClient, err := database.NewMongoClient(ctx, database.ConnectionInfo{
 		URI:      cfg.DB.URI,
@@ -44,7 +43,7 @@ func main() {
 	}
 	defer func(dbClient *mongo.Client, ctx context.Context) {
 		if err := dbClient.Disconnect(ctx); err != nil {
-			return
+			logrus.Fatal(err)
 		}
 	}(dbClient, ctx)
 	db := dbClient.Database(cfg.DB.Database)
@@ -52,9 +51,18 @@ func main() {
 	logRepo := repository.NewRepository(cfg, db)
 	logService := service.NewService(logRepo)
 
-	srv := server.NewServer(logService.Logs)
+	srv := server.NewServer(logService)
+	if err := srv.Listen(cfg); err != nil {
+		logrus.Fatal(err)
+	}
+	defer func(srv *server.Server) {
+		if err := srv.Close(); err != nil {
+			logrus.Fatal(err)
+		}
+	}(srv)
+
 	go func() {
-		if err := srv.Run(cfg.Server.Host, cfg.Server.Port); err != nil {
+		if err := srv.Serve(ctx); err != nil {
 			logrus.Fatal(err)
 		}
 	}()
@@ -67,5 +75,4 @@ func main() {
 
 	logrus.Info("Notes-log stopped")
 
-	srv.Stop()
 }
