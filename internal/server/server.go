@@ -2,17 +2,17 @@ package server
 
 import (
 	"fmt"
-	log "github.com/rusystem/notes-log/pkg/domain"
+	logs "github.com/rusystem/notes-log/pkg/proto"
 	"google.golang.org/grpc"
 	"net"
 )
 
 type Server struct {
 	grpcSrv   *grpc.Server
-	logServer log.LogsServer
+	logServer logs.LogsServer
 }
 
-func NewServer(logServer log.LogsServer) *Server {
+func NewServer(logServer logs.LogsServer) *Server {
 	return &Server{
 		grpcSrv:   grpc.NewServer(),
 		logServer: logServer,
@@ -27,7 +27,7 @@ func (s *Server) Run(port int) error {
 		return err
 	}
 
-	log.RegisterLogsServer(s.grpcSrv, s.logServer)
+	logs.RegisterLogsServer(s.grpcSrv, s.logServer)
 
 	if err := s.grpcSrv.Serve(lis); err != nil {
 		return err

@@ -8,6 +8,7 @@ import (
 	"github.com/rusystem/notes-log/internal/service"
 	"github.com/rusystem/notes-log/pkg/database"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
 	"os"
 	"os/signal"
 	"syscall"
@@ -33,31 +34,38 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Ctx.Ttl)
 	defer cancel()
 
-	db, err := database.NewMongoConnection(ctx, database.ConnectionInfo{
+	dbClient, err := database.NewMongoClient(ctx, database.ConnectionInfo{
 		URI:      cfg.DB.URI,
 		Username: cfg.DB.Username,
 		Password: cfg.DB.Password,
-		Database: cfg.DB.Database,
 	})
 	if err != nil {
 		logrus.Fatal(err)
 	}
+	defer func(dbClient *mongo.Client, ctx context.Context) {
+		if err := dbClient.Disconnect(ctx); err != nil {
+			return
+		}
+	}(dbClient, ctx)
+	db := dbClient.Database(cfg.DB.Database)
 
 	logRepo := repository.NewRepository(cfg, db)
 	logService := service.NewService(logRepo)
 
 	srv := server.NewServer(logService.Logs)
-	if err := srv.Run(cfg.Server.Port); err != nil {
-		logrus.Fatal(err)
-	}
-	defer srv.Stop()
+	go func() {
+		if err := srv.Run(cfg.Server.Port); err != nil {
+			logrus.Fatal(err)
+		}
+	}()
 
-	logrus.Print("Notes-log started")
+	logrus.Info("Notes-log started")
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logrus.Print("Notes-log stopped")
+	logrus.Info("Notes-log stopped")
 
+	srv.Stop()
 }

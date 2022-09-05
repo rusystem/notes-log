@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 	"github.com/rusystem/notes-log/internal/repository"
-	"github.com/rusystem/notes-log/pkg/domain"
+	logs "github.com/rusystem/notes-log/pkg/proto"
 )
 
 type Logs interface {
-	Insert(ctx context.Context, req *domain.LogRequest) (*domain.Empty, error)
+	Insert(ctx context.Context, req *logs.LogRequest) (*logs.Empty, error)
 }
 
 type Service struct {

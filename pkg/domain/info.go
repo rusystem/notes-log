@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	logs "github.com/rusystem/notes-log/pkg/proto"
 	"time"
 )
 
@@ -19,19 +20,19 @@ const (
 )
 
 var (
-	entities = map[string]LogRequest_Entities{
-		ENTITY_USER: LogRequest_USER,
-		ENTITY_NOTE: LogRequest_NOTE,
+	entities = map[string]logs.LogRequest_Entities{
+		ENTITY_USER: logs.LogRequest_USER,
+		ENTITY_NOTE: logs.LogRequest_NOTE,
 	}
 
-	actions = map[string]LogRequest_Actions{
-		ACTION_CREATE:   LogRequest_CREATE,
-		ACTION_UPDATE:   LogRequest_UPDATE,
-		ACTION_GET:      LogRequest_GET,
-		ACTION_DELETE:   LogRequest_DELETE,
-		ACTION_REGISTER: LogRequest_REGISTER,
-		ACTION_LOGIN:    LogRequest_LOGIN,
-		ACTION_REFRESH:  LogRequest_REFRESH,
+	actions = map[string]logs.LogRequest_Actions{
+		ACTION_CREATE:   logs.LogRequest_CREATE,
+		ACTION_UPDATE:   logs.LogRequest_UPDATE,
+		ACTION_GET:      logs.LogRequest_GET,
+		ACTION_DELETE:   logs.LogRequest_DELETE,
+		ACTION_REGISTER: logs.LogRequest_REGISTER,
+		ACTION_LOGIN:    logs.LogRequest_LOGIN,
+		ACTION_REFRESH:  logs.LogRequest_REFRESH,
 	}
 )
 
@@ -42,7 +43,7 @@ type LogItem struct {
 	Timestamp time.Time `bson:"timestamp"`
 }
 
-func ToPbEntity(entity string) (LogRequest_Entities, error) {
+func ToPbEntity(entity string) (logs.LogRequest_Entities, error) {
 	val, ex := entities[entity]
 	if !ex {
 		return 0, errors.New("invalid entity")
@@ -51,7 +52,7 @@ func ToPbEntity(entity string) (LogRequest_Entities, error) {
 	return val, nil
 }
 
-func ToPbAction(action string) (LogRequest_Actions, error) {
+func ToPbAction(action string) (logs.LogRequest_Actions, error) {
 	val, ex := actions[action]
 	if !ex {
 		return 0, errors.New("invalid action")
