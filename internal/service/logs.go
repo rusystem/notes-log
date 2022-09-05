@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/rusystem/notes-log/internal/domain"
 	"github.com/rusystem/notes-log/internal/repository"
-	"github.com/rusystem/notes-log/pkg/domain"
-	logs "github.com/rusystem/notes-log/pkg/proto"
 )
 
 type LogsService struct {
@@ -17,13 +17,18 @@ func NewLogsService(repo repository.Logs) *LogsService {
 	}
 }
 
-func (s *LogsService) Insert(ctx context.Context, req *logs.LogRequest) (*logs.Empty, error) {
-	item := domain.LogItem{
-		Action:    req.GetActions().String(),
-		Entity:    req.GetEntity().String(),
-		EntityID:  req.GetEntityId(),
-		Timestamp: req.GetTimestamp().AsTime(),
+func (s *LogsService) Insert(ctx context.Context, message string) error {
+	var data domain.LogItem
+	if err := json.Unmarshal([]byte(message), &data); err != nil {
+		return err
 	}
 
-	return &logs.Empty{}, s.repo.Insert(ctx, item)
+	item := domain.LogItem{
+		Action:    data.Action,
+		Entity:    data.Entity,
+		EntityID:  data.EntityID,
+		Timestamp: data.Timestamp,
+	}
+
+	return s.repo.Insert(ctx, item)
 }

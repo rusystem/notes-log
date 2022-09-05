@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/rusystem/notes-log/internal/config"
-	"github.com/rusystem/notes-log/pkg/domain"
+	"github.com/rusystem/notes-log/internal/domain"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
