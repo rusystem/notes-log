@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.5'
 
 services:
   notes-log:
@@ -16,7 +16,7 @@ services:
       - DB_COLLECTION=logs
       - SERVER_PORT=9000
     networks:
-      - application
+      - app_log
   mongodb:
     restart: always
     image: mongo:latest
@@ -27,8 +27,8 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - application
+      - app_log
 
 networks:
-  application:
-    external: true
+  app_log:
+    name: note_network
