@@ -54,7 +54,7 @@ func main() {
 
 	srv := server.NewServer(logService.Logs)
 	go func() {
-		if err := srv.Run(cfg.Server.Port); err != nil {
+		if err := srv.Run(cfg.Server.Host, cfg.Server.Port); err != nil {
 			logrus.Fatal(err)
 		}
 	}()

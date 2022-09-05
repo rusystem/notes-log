@@ -4,6 +4,7 @@ services:
   notes-log:
     build: ./
     command: ./notes-log
+    hostname: noteslog
     ports:
       - "9000:9000"
     depends_on:
@@ -14,6 +15,7 @@ services:
       - DB_PASSWORD=qwerty
       - DB_DATABASE=admin
       - DB_COLLECTION=logs
+      - SERVER_HOST=noteslog
       - SERVER_PORT=9000
     networks:
       - app_log
@@ -32,3 +34,4 @@ services:
 networks:
   app_log:
     name: note_network
+    driver: bridge

@@ -23,6 +23,7 @@ type Mongo struct {
 }
 
 type Server struct {
+	Host string
 	Port int
 }
 

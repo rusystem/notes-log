@@ -19,8 +19,8 @@ func NewServer(logServer logs.LogsServer) *Server {
 	}
 }
 
-func (s *Server) Run(port int) error {
-	addr := fmt.Sprintf(":%d", port)
+func (s *Server) Run(host string, port int) error {
+	addr := fmt.Sprintf("%s:%d", host, port)
 
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
